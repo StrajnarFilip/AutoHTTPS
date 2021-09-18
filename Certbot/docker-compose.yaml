@@ -28,7 +28,7 @@ services:
       - ./certificate:/certificate
       - ./script:/script
     environment:
-      user_email: "filip.strajnar@gmail.com"
-      user_domain: "hetzner.filips.xyz"
+      user_email: "your@email.address"
+      user_domain: "your.domain.xyz"
     entrypoint: 'sh'
     command: "/script/script.sh"
