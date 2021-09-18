@@ -1,0 +1,20 @@
+# Certificate will be inside ./certificate/fullchain.pem
+# Private key will be inside ./certificate/privkey.pem
+#
+version: "3.3"
+services:
+  certbotcert:
+    image: certbot/certbot
+    ports:
+      - "0.0.0.0:80:80"
+      - "0.0.0.0:443:443"
+    volumes:
+      - ./letsencrypt:/etc/letsencrypt
+      - ./var:/var
+      - ./certificate:/certificate
+      - ./script:/script
+    environment:
+      user_email: "filip.strajnar@gmail.com"
+      user_domain: "live.filips.xyz"
+    entrypoint: 'sh'
+    command: "/script/script.sh"
