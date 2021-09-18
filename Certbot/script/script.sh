@@ -8,5 +8,5 @@ certbot certonly \
 --key-type ecdsa \
 --elliptic-curve secp384r1 ;
 
-cp /etc/letsencrypt/live/live.filips.xyz/fullchain.pem /certificate ;
-cp /etc/letsencrypt/live/live.filips.xyz/privkey.pem /certificate
+cp /etc/letsencrypt/live/${user_domain}/fullchain.pem /certificate ;
+cp /etc/letsencrypt/live/${user_domain}/privkey.pem /certificate

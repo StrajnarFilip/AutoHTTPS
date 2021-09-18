@@ -29,6 +29,6 @@ services:
       - ./script:/script
     environment:
       user_email: "filip.strajnar@gmail.com"
-      user_domain: "live.filips.xyz"
+      user_domain: "hetzner.filips.xyz"
     entrypoint: 'sh'
     command: "/script/script.sh"
