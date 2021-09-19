@@ -21,3 +21,4 @@ services:
     volumes:
       - ./Certbot/certificate:/certificate
       - ./conf.d:/etc/nginx/conf.d
+      - ./static:/usr/share/nginx/static
