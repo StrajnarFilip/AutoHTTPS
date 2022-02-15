@@ -13,6 +13,7 @@
 #   limitations under the License.
 version: "3.3"
 services:
+  network_mode: "host"
   nginxproxy:
     image: nginx
     ports:
