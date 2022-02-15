@@ -1,4 +1,9 @@
 #!/bin/bash
+
+# Example invocation:
+# setup.sh "my.domain.com" "my@email.com" "static"
+# setup.sh "my.domain.com" "my@email.com" "proxy" "http://127.0.0.1:5000"
+
 # First argument is domain
 cert_domain=$1
 # Second is email
