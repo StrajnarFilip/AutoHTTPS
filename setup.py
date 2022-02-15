@@ -15,7 +15,13 @@ file_or_proxy=sys.argv[3]
 # Location, example: http://127.0.0.1:5000
 location=sys.argv[4]
 
-new_certbot_compose=f'''#   Copyright 2021 Filip Strajnar
+# Quickly write to a file
+def safe_write(file_path,content):
+  f=open(file_path, "w", encoding="utf-8")
+  f.write(content)
+  f.close()
+
+certificate_docker_compose=f'''#   Copyright 2021 Filip Strajnar
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -50,31 +56,29 @@ services:
     entrypoint: "sh"
     command: "/script/script.sh"'''
 
-cert_compose_path=os.path.join("Certbot","docker-compose.yaml")
-cert_dockercompose_file=open(cert_compose_path, "w", encoding=utf_8)
-cert_dockercompose_file.write(new_certbot_compose)
+certificate_compose_path=os.path.join("Certbot","docker-compose.yaml")
+https_compose_path=os.path.join("conf.d","https.conf")
+safe_write(certificate_compose_path,certificate_docker_compose)
 
-insertion=""
-# Branch
-if file_or_proxy == "static":
-  insertion="""location / {
-        root   /usr/share/nginx/static;
-        index  index.html;
-    }"""
-elif file_or_proxy == "proxy":
-  insertion="""location / {
-        proxy_pass   {location};
-    }"""
-
-https_template="""server {
+def https_template(to_insert: str) -> str:
+  return r"""server {
     listen       443 ssl;
-    server_name  {cert_domain};
+    server_name  """ + cert_domain + r""";
     ssl_certificate     /certificate/fullchain.pem;
     ssl_certificate_key /certificate/privkey.pem;
 
-    {insertion}
+    """ + to_insert + r"""
 }"""
 
-https_compose_path=os.path.join("conf.d","https.conf")
-https_conf_file=open(https_compose_path, "w", encoding=utf_8)
-https_conf_file.write(https_template)
+# Branch
+if file_or_proxy == "static":
+  insertion=r"""location / {
+        root   /usr/share/nginx/static;
+        index  index.html;
+    }"""
+  safe_write(https_compose_path,https_template(insertion))
+elif file_or_proxy == "proxy":
+  insertion=r"""location / {
+        proxy_pass   """ + location + r""";
+    }"""
+  safe_write(https_compose_path,https_template(insertion))
