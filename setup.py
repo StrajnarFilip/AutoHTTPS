@@ -1,19 +1,21 @@
-#!/bin/bash
+from encodings import utf_8
+import sys
+import os
 
 # Example invocation:
-# setup.sh "my.domain.com" "my@email.com" "static"
-# setup.sh "my.domain.com" "my@email.com" "proxy" "http://127.0.0.1:5000"
+# python3 setup.py "my.domain.com" "my@email.com" "static"
+# python3 setup.py "my.domain.com" "my@email.com" "proxy" "http://127.0.0.1:5000"
 
 # First argument is domain
-cert_domain=$1
+cert_domain=sys.argv[1]
 # Second is email
-cert_email=$2
+cert_email=sys.argv[2]
 # Static files or proxy (static OR proxy)
-file_or_proxy=$3
+file_or_proxy=sys.argv[3]
 # Location, example: http://127.0.0.1:5000
-location=$4
+location=sys.argv[4]
 
-new_certbot_compose='#   Copyright 2021 Filip Strajnar
+new_certbot_compose=f'''#   Copyright 2021 Filip Strajnar
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -43,35 +45,36 @@ services:
       - ./certificate:/certificate
       - ./script:/script
     environment:
-      user_email: '$cert_email'
-      user_domain: '$cert_domain'
+      user_email: "{cert_email}"
+      user_domain: "{cert_domain}"
     entrypoint: "sh"
-    command: "/script/script.sh"'
+    command: "/script/script.sh"'''
 
-echo $new_certbot_compose > ./Certbot/docker-compose.yaml
+cert_compose_path=os.path.join("Certbot","docker-compose.yaml")
+cert_dockercompose_file=open(cert_compose_path, "w", encoding=utf_8)
+cert_dockercompose_file.write(new_certbot_compose)
 
+insertion=""
 # Branch
-if test $file_or_proxy = "static" ; then
-  insertion="location / {
+if file_or_proxy == "static":
+  insertion="""location / {
         root   /usr/share/nginx/static;
         index  index.html;
-    }"
-elif test $file_or_proxy = "proxy" ; then
-  insertion="location / {
-        proxy_pass   ${location};
-    }"
-fi
+    }"""
+elif file_or_proxy == "proxy":
+  insertion="""location / {
+        proxy_pass   {location};
+    }"""
 
-https_template="server {
+https_template="""server {
     listen       443 ssl;
-    server_name  ${cert_domain};
+    server_name  {cert_domain};
     ssl_certificate     /certificate/fullchain.pem;
     ssl_certificate_key /certificate/privkey.pem;
 
-    $insertion
-}"
+    {insertion}
+}"""
 
-echo $https_template > ./conf.d/https.conf
-
-cd Certbot ; docker-compose up -d
-cd .. ; docker-compose up -d
+https_compose_path=os.path.join("conf.d","https.conf")
+https_conf_file=open(https_compose_path, "w", encoding=utf_8)
+https_conf_file.write(https_template)
