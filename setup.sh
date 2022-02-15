@@ -1,3 +1,4 @@
+#!/bin/bash
 # First argument is domain
 cert_domain=$1
 # Second is email
@@ -66,3 +67,6 @@ https_template="server {
 }"
 
 echo $https_template > ./conf.d/https.conf
+
+cd Certbot ; docker-compose up -d
+cd .. ; docker-compose up -d
