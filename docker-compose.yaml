@@ -14,7 +14,6 @@
 version: "3.3"
 services:
   nginxproxy:
-    network_mode: "host"
     image: nginx
     ports:
       - "0.0.0.0:80:80"
